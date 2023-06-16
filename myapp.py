@@ -27,7 +27,8 @@ if option == "Upload Image":
             path = "detect_img.py"
 
             with st.spinner("Performing detection..."):
-                subprocess.run([sys.executable, path], bufsize=0, shell=True, check=True)
+                python = sys.executable
+                subprocess.run([python, path], bufsize=0, shell=True, check=True)
 
         if os.path.exists("runs"):
             for i in os.listdir("runs/detect/"):
