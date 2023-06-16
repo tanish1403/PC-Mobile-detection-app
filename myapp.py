@@ -4,6 +4,20 @@ import streamlit as st
 import subprocess
 
 st.title("PC/Mobile Detection App")
+def detect(save_directory):
+    weights = "best.pt"
+    # detectorScript = "detect.py"
+    
+    if st.button("Start Detection"):
+            path = "detect.py"
+
+            with st.spinner("Performing detection..."):
+                pyth = sys.executable
+                st.write("detection started")
+                out = os.path.join(save_directory, "out")
+                subprocess.run([pyth , path, '--source', save_directory, '--weights', weights, '--conf', '0.25', '--name', 'detect', '--exist-ok','--no-trace'])
+                st.write("Detection ended")
+
 option = st.sidebar.selectbox("Select Option", ("Upload Image","History"))
 
 if option == "Upload Image":
@@ -13,24 +27,15 @@ if option == "Upload Image":
         save_directory = "test"
         os.makedirs(save_directory, exist_ok=True)
 
-        # Remove previous images from the test directory
-        for old_image in os.listdir(save_directory):
-            os.remove(os.path.join(save_directory, old_image))
-
         saving_path = os.path.join(save_directory, image_path.name)
         with open(saving_path, "wb") as f:
-            f.write(image_path.read())
+            f.write(image_path.getbuffer())
         if os.path.exists(saving_path):
             st.write("File Successfully Uploaded")
 
-        if st.button("Start Detection"):
-            path = "detect_img.py"
+        detect(save_directory)
 
-            with st.spinner("Performing detection..."):
-                python = sys.executable
-                subprocess.run([python, path], bufsize=0, shell=True, check=True)
-
-        if os.path.exists("runs"):
+        if os.path.exists("runs/detect") :
             for i in os.listdir("runs/detect/"):
                 if os.path.exists(f"runs/detect/{i}/{image_path.name}"):
                     st.image(f"runs/detect/{i}/{image_path.name}", channels="BGR", caption="pc-detection")
