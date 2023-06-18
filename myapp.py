@@ -62,6 +62,7 @@ st.markdown(
         color: red;
     }
     .app-title {
+        font-size = 40px;
         font-family: "Arial", sans-serif;
         font-size: 24px;
         font-weight: bold;
@@ -113,16 +114,13 @@ st.markdown('<div class="app-title">PC/Mobile Detection App</div>', unsafe_allow
 sidebar_options = ["Overview","Upload Image", "History", "YOLOv7 Research Paper"]
 
 # Selected option
-selected_option = st.sidebar.selectbox("Select Option", sidebar_options)
+# selected_option = st.sidebar.selectbox("Select Option", sidebar_options)
 
 # Navbar
-st.markdown('<div class="navbar">' +
-            ''.join([f'<div class="navbar-option {"active-option" if option == selected_option else ""}" onclick="location.href=\'#{option.lower()}\';">{option}</div>'
-                     for option in sidebar_options]) +
-            '</div>',
-            unsafe_allow_html=True)
+# st.title("Object detection APP")
+tab0, tab1, tab2, tab3 = st.tabs(sidebar_options)
 # st.markdown('<h1 class="app-data">AI Powered Tool</h1>', unsafe_allow_html=True)
-st.markdown('<h1 class="app-data">Detect PC/Mobile in Your Images</h1>', unsafe_allow_html=True)
+
 
 
 # Function for performing detection
@@ -144,9 +142,11 @@ def detect(save_directory):
 # Upload Image section
 
 
-st.markdown('<h2 class="section-title">Overview</h2>', unsafe_allow_html=True)
-st.markdown('<p class="paragraph">Welcome to our AI-powered tool for detecting PC/mobile devices in your images! This innovative application utilizes the powerful YOLOv7 object detection algorithm to identify and classify various devices such as mobile/tablet, TV/monitor, keyboard, mouse, and laptop.</p>', unsafe_allow_html=True)
-if selected_option == "Overview":
+
+with tab0:
+    st.markdown('<h1 class="app-data">Detect PC/Mobile in Your Images</h1>', unsafe_allow_html=True)
+    st.markdown('<h2 class="section-title">Overview</h2>', unsafe_allow_html=True)
+    st.markdown('<p class="paragraph">Welcome to our AI-powered tool for detecting PC/mobile devices in your images! This innovative application utilizes the powerful YOLOv7 object detection algorithm to identify and classify various devices such as mobile/tablet, TV/monitor, keyboard, mouse, and laptop.</p>', unsafe_allow_html=True)
     st.markdown('<h2 class="sub-section-title">How it Works</h2>', unsafe_allow_html=True)
     st.markdown("<p class='paragraph'>By leveraging the state-of-the-art YOLOv7 model, our app can accurately detect and locate PC/mobile devices in any uploaded image. Whether you're a designer, developer, or simply curious about the devices present in your images, this tool provides valuable insights and saves you time.</p>", unsafe_allow_html=True)
     st.markdown('<h2 class="sub-section-title">Simple and User-Friendly</h2>', unsafe_allow_html=True)
@@ -155,13 +155,38 @@ if selected_option == "Overview":
     st.markdown('<p class="paragraph">To begin, simply select the "Upload Image" option from the sidebar. You can either drag and drop an image file or click on the upload area to select an image from your device. Once the image is uploaded, our tool will process it using the YOLOv7 algorithm and highlight the detected PC/mobile devices.</p>', unsafe_allow_html=True)
     st.markdown('<h2 class="sub-section-title">Why YOLOv7?</h2>', unsafe_allow_html=True)
     st.markdown('<p class="paragraph">YOLOv7 is an advanced and trainable object detection algorithm that has achieved state-of-the-art performance in real-time object detection tasks. By leveraging the power of YOLOv7, our app is capable of accurately identifying PC/mobile devices with impressive speed and efficiency.</p>', unsafe_allow_html=True)
-    st.markdown('<h2 class="sub-section-title">Summary</h2>', unsafe_allow_html=True)
-    st.markdown("<p class='paragraph'>Our AI-powered tool offers a convenient and efficient way to detect PC/mobile devices in your images. Whether you're analyzing designs, conducting market research, or simply exploring the devices present in your photos, our app provides valuable insights at your fingertips. Give it a try and discover the hidden devices within your images!</p>", unsafe_allow_html=True)
+    # st.markdown('<h2 class="sub-section-title">Summary</h2>', unsafe_allow_html=True)
+    # st.markdown("<p class='paragraph'>Our AI-powered tool offers a convenient and efficient way to detect PC/mobile devices in your images. Whether you're analyzing designs, conducting market research, or simply exploring the devices present in your photos, our app provides valuable insights at your fingertips. Give it a try and discover the hidden devices within your images!</p>", unsafe_allow_html=True)
 
-if selected_option == "Upload Image":
+with tab1:
+    st.markdown('<h1 class="app-data">Detect PC/Mobile in Your Images</h1>', unsafe_allow_html=True)
+    st.markdown('<h2 class="section-title">Overview</h2>', unsafe_allow_html=True)
+    st.markdown('<p class="paragraph">Welcome to our AI-powered tool for detecting PC/mobile devices in your images! This innovative application utilizes the powerful YOLOv7 object detection algorithm to identify and classify various devices such as mobile/tablet, TV/monitor, keyboard, mouse, and laptop.</p>', unsafe_allow_html=True)
     st.markdown(f'<h2 id="upload">Upload Image</h2>', unsafe_allow_html=True)
-    image_path = st.file_uploader("Drag and drop or click here to upload image", type=["png", "jpg", "jpeg"])
-    upload_button = st.button("Upload")
+    st.write('''
+        
+    #### Classes
+        
+
+            The YOLOv7 model has been trained to detect the following custom classes:
+    
+            1. Mobile/Tablet
+            2. Laptop
+            3. TV/Monitor
+            4. Keyboard
+            5. Mouse
+    
+    ''')
+    dropdownContainer , dumb ,dumb= st.columns(3)
+    with dropdownContainer:
+        st.subheader("Try it !")
+        dropdown= st.selectbox('Uplaod / Take picture ', ['Upload', 'Take Picture'],key=f"dropdown for dropdown")
+    if dropdown == 'Upload':
+        image_path = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
+        # Image processing button
+    else:
+        image_path = st.camera_input("Take a picture")
+
     # image_path = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
 
     if image_path is not None:
@@ -179,7 +204,11 @@ if selected_option == "Upload Image":
         if os.path.exists("runs/detect"):
             for i in os.listdir("runs/detect/"):
                 if os.path.exists(f"runs/detect/{i}/{image_path.name}"):
-                    st.image(f"runs/detect/{i}/{image_path.name}", channels="BGR", caption="pc-detection")
+                    col1,col2 = st.columns(2)
+                    with col1:
+                        st.image(f"runs/detect/{i}/{image_path.name}", caption="Processed Image")
+                    with col2:
+                        st.image(saving_path, caption="Original Image")
                     download_path = f"runs/detect/{i}/{image_path.name}"
                     st.download_button(
                         label=f"Download Image",
@@ -188,7 +217,10 @@ if selected_option == "Upload Image":
                     )
 
 # History section
-if selected_option == "History":
+with tab2:
+    st.markdown('<h1 class="app-data">Detect PC/Mobile in Your Images</h1>', unsafe_allow_html=True)
+    st.markdown('<h2 class="section-title">Overview</h2>', unsafe_allow_html=True)
+    st.markdown('<p class="paragraph">Welcome to our AI-powered tool for detecting PC/mobile devices in your images! This innovative application utilizes the powerful YOLOv7 object detection algorithm to identify and classify various devices such as mobile/tablet, TV/monitor, keyboard, mouse, and laptop.</p>', unsafe_allow_html=True)
     st.markdown(f'<h2 id="history">History</h2>', unsafe_allow_html=True)
     if os.path.exists("runs/detect"):
         for folder in os.listdir("runs/detect"):
@@ -196,14 +228,26 @@ if selected_option == "History":
                 for image_file in os.listdir(os.path.join("runs/detect", folder)):
                     if os.path.isfile(os.path.join("runs/detect", folder, image_file)):
                         st.write(image_file)
-                        st.image(os.path.join("runs/detect", folder, image_file), channels="BGR")
-                        st.download_button(
+                        col1,col2 = st.columns(2)
+                        with col1:
+                            st.image(os.path.join("runs/detect", folder, image_file), channels="BGR")
+                            st.download_button(
                             label=f"Download Image",
                             data=os.path.join("runs/detect", folder, image_file),
-                            file_name=image_file,
+                            file_name=f"Processed {image_file}",
                         )
+                        with col2:
+                            st.image(os.path.join("test", image_file), channels="BGR")
+                            st.download_button(
+                                label=f"Download Image",
+                                data=os.path.join("test",  image_file),
+                                file_name=f"Original {image_file}",
+                            )
 # pdf section 
-if selected_option == "YOLOv7 Research Paper":
+with tab3:
+    st.markdown('<h1 class="app-data">Detect PC/Mobile in Your Images</h1>', unsafe_allow_html=True)    
+    st.markdown('<h2 class="section-title">Overview</h2>', unsafe_allow_html=True)
+    st.markdown('<p class="paragraph">Welcome to our AI-powered tool for detecting PC/mobile devices in your images! This innovative application utilizes the powerful YOLOv7 object detection algorithm to identify and classify various devices such as mobile/tablet, TV/monitor, keyboard, mouse, and laptop.</p>', unsafe_allow_html=True)
     st.markdown(f'<h2 id="pdf">View PDF</h2>', unsafe_allow_html=True)
     st.write("PDF will be displayed below:")
     st.markdown(f'<iframe src="https://openaccess.thecvf.com/content/CVPR2023/papers/Wang_YOLOv7_Trainable_Bag-of-Freebies_Sets_New_State-of-the-Art_for_Real-Time_Object_Detectors_CVPR_2023_paper.pdf" width="800" height="600"></iframe>', unsafe_allow_html=True)
