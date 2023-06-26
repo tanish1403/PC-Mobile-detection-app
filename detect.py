@@ -130,8 +130,8 @@ def detect(save_img=False):
                 # else:
                 if not os.path.exists("records"):
                     os.mkdir("records")
-                pth = save_path.split("\\")[-1]
-                with open(f"records/{pth[:-3]}csv", "w", newline="") as file:
+                # pth = save_path.split("\\")[-1]
+                with open(f"records/{p.name[:-3]}csv", "w", newline="") as file:
                     wr=csv.DictWriter(file, fieldnames=fields)
                     wr.writeheader()
                     wr.writerows(res)
