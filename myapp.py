@@ -2,6 +2,7 @@ import os
 import sys
 import streamlit as st
 import subprocess
+import pandas as pd
 
 # Add custom CSS to set the app background color and navbar color
 st.set_page_config(layout="wide")
@@ -135,7 +136,7 @@ def detect(save_directory):
             st.write("Detection started")
             out = os.path.join(save_directory, "out")
             subprocess.run(
-                [pyth, path, "--source", save_directory, "--weights", weights, "--conf", "0.25", "--name", "detect", "--exist-ok", "--no-trace"]
+                [pyth, path, "--source", save_directory, "--weights", weights, "--conf", "0.25", "--name", "detect", "--exist-ok", "--no-trace", "--save-txt"]
             )
             st.write("Detection ended")
 
@@ -200,6 +201,15 @@ with tab1:
             st.write("File Successfully Uploaded")
 
         detect(save_directory)
+
+        if os.path.exists(f"records/{image_path.name[:-3]}csv"):
+            st.checkbox("Use container width", value=False, key="use_container_width")
+
+            df = pd.read_csv(f"records/{image_path.name[:-3]}csv", index_col=["S.No"])
+
+            # Display the dataframe and allow the user to stretch the dataframe
+            # across the full width of the container, based on the checkbox value
+            st.dataframe(df, use_container_width=st.session_state.use_container_width)
 
         if os.path.exists("runs/detect"):
             for i in os.listdir("runs/detect/"):

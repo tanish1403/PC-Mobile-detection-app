@@ -1,7 +1,8 @@
 import argparse
 import time
 from pathlib import Path
-
+import csv
+import os
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
@@ -111,10 +112,34 @@ def detect(save_img=False):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
 
+                # with open("record.csv","w", newline="") as file:
+                #     wr=csv.writer()
+                    
+                    # wr.writerow("Object", "Quantity")
                 # Print results
+                con = 0
+                res=[]
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
+                    con+=1
+                    res.append({'Object': f'{names[int(c)]}{"s" * (n > 1)}', 'S.No': f"{con}", 'Quantity': f'{n}'})
+                fields = ['S.No', 'Object','Quantity' ]
+                # if os.path.exists("records.csv"):
+                #     os.remove("records.csv")
+                # else:
+                if not os.path.exists("records"):
+                    os.mkdir("records")
+                pth = save_path.split("\\")[-1]
+                with open(f"records/{pth[:-3]}csv", "w", newline="") as file:
+                    wr=csv.DictWriter(file, fieldnames=fields)
+                    wr.writeheader()
+                    wr.writerows(res)
+
+
+                
+
+                    
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
